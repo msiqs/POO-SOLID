@@ -1,44 +1,136 @@
-class Carro {
-    modelo: string;
-    marca: string;
-    cor: string;
-    ano: number;
+/*
+Offline, Online, Em Jogo, Pausado, Desconectado
 
-    constructor(modelo: string, marca: string, cor: string, ano: number){
-        this.modelo = modelo;
-        this.marca = marca;
-        this.cor = cor;
-        this.ano = ano;
+Todo jogador começa no estado "Offline".
+
+O jogador "Offline" pode mudar para "Online".
+Um jogador "Online" pode entrar em "Em Jogo" ou ir para "Offline".
+Um jogador "Em Jogo" pode ir para "Pausado" ou "Desconectado".
+Um jogador "Pausado" pode voltar para "Em Jogo" ou ir para "Desconectado".
+Um jogador "Desconectado" volta para "Offline".
+*/
+
+interface EstadoJogador {
+    ficarOnline() : EstadoJogador;
+    ficarOffline() : EstadoJogador;
+    entrarNoJogo() : EstadoJogador;
+    pausarJogo() : EstadoJogador;
+    desconectar() : EstadoJogador;
+    reconectar() : EstadoJogador;
+}
+
+class Offline implements EstadoJogador{
+    ficarOnline(): EstadoJogador {
+        return new Online();
     }
-
-    public consultarDados1(){
-        console.log(`Modelo: ${this.modelo}
-Marca: ${this.marca}
-Cor: ${this.cor}
-Ano: ${this.ano}`)
+    ficarOffline(): EstadoJogador {
+        return this;
+    }
+    entrarNoJogo(): EstadoJogador {
+        return this;
+    }
+    pausarJogo(): EstadoJogador {
+        return this;
+    }
+    desconectar(): EstadoJogador {
+        return this;
+    }
+    reconectar(): EstadoJogador {
+        return this;
     }
 }
 
-const carro1 = new Carro("Celta", "Chevrolet", "Vermelho", 2008)
-
-// carro1.consultarDados()
-class Moto extends Carro {
-    potencia: string;
-
-    constructor(modelo: string, marca: string, cor: string, ano: number, potencia: string, ){
-        super(marca, modelo, cor, ano);
-        this.potencia = potencia;
+class Online implements EstadoJogador {
+    ficarOnline(): EstadoJogador {
+        return this;
     }
-
-    public consultarDados2(){
-        console.log(`Modelo: ${this.modelo}
-Marca: ${this.marca}
-Cor: ${this.cor}
-Ano: ${this.ano}
-Potência: ${this.potencia}`)
+    ficarOffline(): EstadoJogador {
+        return new Offline();
+    }
+    entrarNoJogo(): EstadoJogador {
+        return new EmJogo();
+    }
+    pausarJogo(): EstadoJogador {
+        return this;
+    }
+    desconectar(): EstadoJogador {
+        return new Desconectado();
+    }
+    reconectar(): EstadoJogador {
+        return this;
     }
 }
 
-const moto1 = new Moto("CG 150", "YAMAHA", "Vermelha", 2010, "150cc")
+class EmJogo implements EstadoJogador {
+    ficarOnline(): EstadoJogador {
+        return this;
+    }
+    ficarOffline(): EstadoJogador {
+        return this;
+    }
+    entrarNoJogo(): EstadoJogador {
+        return this;
+    }
+    pausarJogo(): EstadoJogador {
+        return new Pausado();
+    }
+    desconectar(): EstadoJogador {
+        return new Desconectado();
+    }
+    reconectar(): EstadoJogador {
+        return this;
+    }
+}
 
-moto1.consultarDados2()
+class Pausado implements EstadoJogador {
+    ficarOnline(): EstadoJogador {
+        return this;
+    }
+    ficarOffline(): EstadoJogador {
+        return this;
+    }
+    entrarNoJogo(): EstadoJogador {
+        return new EmJogo();
+    }
+    pausarJogo(): EstadoJogador {
+        return this;
+    }
+    desconectar(): EstadoJogador {
+        return new Desconectado();
+    }
+    reconectar(): EstadoJogador {
+        return this;
+    }
+}
+
+class Desconectado implements EstadoJogador {
+    ficarOnline(): EstadoJogador {
+        return this;
+    }
+    ficarOffline(): EstadoJogador {
+        return this;
+    }
+    entrarNoJogo(): EstadoJogador {
+        return this;
+    }
+    pausarJogo(): EstadoJogador {
+        return this;
+    }
+    desconectar(): EstadoJogador {
+        return this;
+    }
+    reconectar(): EstadoJogador {
+        return new Offline();
+    }
+}
+
+class Jogador {
+    estado: EstadoJogador;
+    constructor() {
+        this.estado = new Offline();
+    }
+}
+
+const jogador = new Jogador();
+jogador.estado = jogador.estado.ficarOnline();
+console.log(jogador.estado);
